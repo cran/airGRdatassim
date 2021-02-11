@@ -1,0 +1,27 @@
+#####################################
+##            S3 methods           ##
+#####################################
+S3method('[', InputsPert)
+S3method('[', OutputsModelDA)
+S3method(plot, InputsPert)
+S3method(plot, OutputsModelDA)
+
+
+
+#####################################
+##               Export            ##
+#####################################
+export(RunModel_DA)
+export(CreateInputsPert)
+
+
+
+#####################################
+##               Import            ##
+#####################################
+import(airGR)
+import(stats)
+import(graphics)
+import(grDevices)
+import(utils)
+

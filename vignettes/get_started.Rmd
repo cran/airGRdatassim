@@ -1,0 +1,305 @@
+---
+title: "Get Started with airGRdatassim"
+bibliography:
+  - airgrdatassim_use.bib
+  - airgrdatassim_ref.bib
+  - airgr_ref.bib
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Get Started with airGRdatassim}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, warning=FALSE, include=FALSE}
+#knitr::write_bib("airGR", file = "airgr_ref.bib")
+airGR_bib <- toBibtex(citation("airGR"))
+airGR_bib <- gsub("@Article\\{", "@Article{airGR2017", airGR_bib)
+airGR_bib <- gsub("@Manual\\{", "@Manual{R-airGR", airGR_bib)
+airGRdatassim_bib <- toBibtex(citation("airGRdatassim")) #toBibtex(citation("airGRdatassim")[1])
+airGRdatassim_bib <- gsub("@Article\\{", "@Article{piazzi_sequential_2021", airGRdatassim_bib)
+airGRdatassim_bib <- gsub("@Manual\\{", "@Manual{R-airGRdatassim", airGRdatassim_bib)
+options(encoding = "UTF-8")
+writeLines(text = airGR_bib, con = "airgr_ref.bib")
+writeLines(text = airGRdatassim_bib, con = "airgrdatassim_ref.bib")
+options(encoding = "native.enc")
+```
+
+
+# Introduction
+
+## Scope
+
+Discharge simulations are affected by several sources of uncertainty (e.g. errors in meteorological forcings, sub-optimal parameter estimates).
+
+Data assimilation (DA) allows to combine measurements and model simulations under the assumption that both supply useful information to obtain the most likely estimate of the system state. Among the sequential methods, the ensemble-based techniques allow to explicitly handle different sources of uncertainty and to quantify the unknown errors of both model states and observations.
+
+After the study of @piazzi_sequential_2021, airGRdatassim package [@R-airGRdatassim] provides functions allowing to perform DA-based ensemble discharge simulations. airGRdatassim is a package based on the [airGR](https://CRAN.R-project.org/package=airGR) hydrological modeling package [@airGR2017; @R-airGR]. This package is designed to flexibly use the Ensemble Kalman filter (EnKF) or Particle filter (PF) technique to assimilate daily discharge observations into GR4J, GR5J, and GR6J models (use the command `?airGR` to get the references of the GR models). 
+
+The uncertainty in both the meteorological forcings (i.e. precipitation and potential evapotranspiration) and model states (i.e. production store level, routing store level and unit hydrographs) can be easily taken into account by enabling specific perturbation procedures.
+
+In this user guide we go through the assimilation procedure with the aim of explaining how to perform DA-based discharge simulations.
+Along with the description of the modelling system, key recommendations are provided to support the definition of the operational configuration.
+
+
+## Loading catchment data
+
+airGRdatassim is a package based on the [airGR](https://CRAN.R-project.org/package=airGR) hydrological modeling package [@airGR2017; @R-airGR].
+
+All the examples rely on the following data set, which is available in [airGR](https://CRAN.R-project.org/package=airGR) package:  
+
+```{r, warning=FALSE}
+library(airGRdatassim)
+
+data(L0123001, package = "airGR") 
+head(BasinObs)
+```
+
+
+
+# Settings for data assimilation
+
+This section introduces and explains the main settings of the DA scheme that the user needs to define.
+
+
+## Ensemble size
+
+The ensemble size can be defined by assigning `NbMbr` with the number of ensemble members.
+
+It is noteworthy that the PF technique is more sensitive to the ensemble size than the EnKF scheme. Indeed, compared to the EnKF scheme, the PF generally needs a larger ensemble size to efficiently perform the weighting and resampling of particles.
+It is recommended to generate and use an ensemble of at least 20 or 30 members, when using the EnKF or the PF scheme, respectively.
+
+
+## Enable/disable the assimilation via EnKF or PF
+
+The DA methodology can be chosen between EnKF and PF by defining `DaMethod`. To perform the open-loop simulation (i.e., without DA), the assimilation of discharge observations can be disabled.
+
+If `DaMethod = "PF"`, the PF performs the joint update of all the state variables.
+
+If `DaMethod = "EnKF"`, the EnKF performs the update of the state variables specified in `StateEnKF`. 
+
+If `DaMethod = "none"`, discharge assimilation is not performed (i.e., open-loop simulation).
+
+Among the model states, the update of the routing store level ensures the most benefit from the assimilation of observed discharges. Conversely, the update of the unit hydrograph only has a slight impact on the accuracy of the DA-based discharge simulations [@piazzi_sequential_2021].
+
+
+## Model uncertainties
+
+Both the uncetainties in meteorological forcings and state variables can be taken into account in the assimilation scheme. 
+
+For both DA techniques, the state variables defined in `StatePert` are perturbed.
+
+The perturbation of model states is performed through a normally-distributed null-mean noise. The noise variance is assumed equal to the variance of the state variables resulting from the analysis procedure and it is restricted between upper and lower limits [@salamon_assessing_2009].
+
+When considering the uncertainty in the forcings, the `CreateInputsPert()` function generates an ensemble for precipitation or/and potential evapotranspiration, provided as function argument/s.
+It is noteworthy that a significant reduction in the ensemble spread may occur especially in no-rain periods, when accounting only for meteorological uncertainty.
+
+Even though a more comprehensive representation of the state uncertainty can prevent the ensemble shrinkage, it has a different impact on the performance of the PF and the EnKF schemes [@piazzi_sequential_2021]. Indeed, while a higher model error covariance can lead to an overweighting of observations in the EnKF-based analysis procedure, a larger spread of the ensemble simulations allows for a more straightforward weighting and thus a more efficient resampling of particles in the PF scheme. 
+
+
+## Definition of DA settings
+
+The example below considers EnKF-based discharge simulations relying on a 100-member ensemble, when accounting for the uncertainty in model state variables (see `StatePert`). More specifically, only the levels of the production (`"Prod"`) and the routing (`"Rout"`) stores are updated and perturbed (see `StatePert`).
+
+It is of key importance to consider that `StateEnKF` allows to select the state variables to be updated and `StatePert` identifies the state variables to be perturbed in the EnKF scheme. Conversely, in the PF scheme `StatePert` identifies the state variables of interest only within the perturbation procedure, as this DA technique jointly updates all the model states.
+
+```{r, warning=FALSE}
+# ensemble size 
+NbMbr <- 100L
+
+# "EnKF" ; "PF" ; "none"
+DaMethod <- "EnKF"
+
+# "Prod": production store level
+# "Rout": routing store level;
+# "UH1": unit hydrograph 1 levels (not defined in GR5J model)
+# "UH2": unit hydrograph 2 levels
+StateEnKF <- c("Prod", "Rout")
+StatePert <- c("Prod", "Rout") 
+```
+
+
+
+# Ensemble meteorological forcings
+
+When accounting for the uncertainty in meteorological forcings, the `CreateInputsPert()` function generates an ensemble for precipitation or/and potential evapotranspiration, provided as function argument/s.
+
+Probabilistic model inputs result from the perturbation of the meteorological data through a multiplicative stochastic noise, according to the methodology proposed by @clark_hydrological_2008 
+The random perturbations are provided through a first-order autoregressive model in order to guarantee a physical consistency and a temporal correlation of the time-variant forcings. For the generation of perturbations of both the meteorological variables, the fractional error parameter is set equal to 0.65 and the temporal decorrelation length is defined as 1 day for rainfall and 2 days for potential evapotranspiration, by default.
+
+Deterministic model inputs are still needed for the warm-up period and they are generated through the `CreateInputsModel()` function of the [airGR](https://CRAN.R-project.org/package=airGR) package.
+
+In this example, discharge simulations are provided by GR5J model throughout the period from 2006-09-01 to 2006-09-31.
+
+```{r, warning=FALSE}
+## simulation period
+IndRun <- seq(which(format(BasinObs$DatesR, format = "%Y-%m-%d") == "2006-09-01"), 
+              which(format(BasinObs$DatesR, format = "%Y-%m-%d") == "2006-10-31"))
+
+## preparation of InputsModel object
+InputsModel <- CreateInputsModel(FUN_MOD = RunModel_GR5J, DatesR = BasinObs$DatesR, 
+                                 Precip = BasinObs$P, PotEvap = BasinObs$E)
+
+## generation of probabilistic model inputs
+InputsPert <- CreateInputsPert(FUN_MOD = RunModel_GR5J,
+                               DatesR = BasinObs$DatesR,
+                               Precip = BasinObs$P, PotEvap = BasinObs$E, 
+                               NbMbr = NbMbr)
+```
+
+Please note that if the uncertainty in meteorological forcings is not taken into account, the same deterministic `InputsModel` object is used to force each ensemble member.
+
+
+
+# Discharge observations for DA
+
+The estimate of the observation error is of critical importance, as it defines how the filter trusts the observations and thus to what extent they are assimilated into the model. 
+
+By default, the measurement noise is generated from a normal distribution with a zero-valued mean and a variance parameterized as a function of the observed discharge rate [@weerts_particle_2006; @clark_hydrological_2008]. With the aim of preventing underestimated error variances in case of low discharge, the minimum threshold of the observation error variance is evaluated as the quantile 10 of discharge observations, by default [@thirel_past_2010].
+
+```{r, warning=FALSE}
+## discharge observations to be assimilated
+Qobs <- BasinObs$Qmm[IndRun]
+```
+
+
+
+# DA-based discharge simulations
+
+We assume that the GR5J model has been previously calibrated by using the `Calibration()` function of [airGR](https://CRAN.R-project.org/package=airGR) package. Therefore, we refer to the calibrated values of model parameters as `Param`.
+
+The `RunModel_DA()` function supplies the ensemble discharge simulations resulting from the sequential assimilation of daily discharge observations via EnKF or PF. Because of the recursive approach, the analysis states resulting from the assimilation procedure at time step `t` are used as initial states at the following prediction time step `t + 1`.
+
+If the state uncertainty is taken into account (`StatePert`), the initial state at the prediction time step `t + 1` is the perturbed analysis state resulting from the assimilation and perturbation procedures at time step `t`.
+
+The function provides three outputs:
+
+- the ensemble discharge simulations (`QsimEns`)
+
+- the ensemble values of background model states, namely before the filter update (`EnsStateBkg`)
+
+- the ensemble values of analysis model states, namely after the filter update (`EnsStateA`)
+
+
+## EnKF-based discharge simulations
+
+The following example supplies probabilistic discharge simulations relying on the EnKF-based assimilation of daily discharge observations.
+
+```{r, warning=FALSE}
+Param <- c(X1 = 194.243, X2 = -0.088, X3 = 117.740, X4 = 1.680, X5 = 0.000)
+ResEnKF <- RunModel_DA(InputsModel = InputsModel,
+                       InputsPert = InputsPert,
+                       Qobs = BasinObs$Qmm,
+                       IndRun = IndRun,
+                       FUN_MOD = RunModel_GR5J, Param = Param,
+                       DaMethod = "EnKF", NbMbr = NbMbr,
+                       StateEnKF = StateEnKF, StatePert = StatePert)
+```
+
+As defined in `StateEnKF`, in this example the EnKF scheme updates only the levels of the production (`"Prod"`) and the routing (`"Rout"`) stores through the assimilation of discharge observations. Along with the uncertainty in meterological forcings (`InputsPert` is supplied), also the uncertainty in model states (`StatePert`) is taken into account. Therefore, the selected state variables (i.e. the store levels) are consistently perturbed after their update.  
+
+The EnKF scheme relies on mass-constraints to guarantee the non-negativity of state variables by ensuring minimum state values. It is noteworthy that the level of production store cannot drop below the 5 percent of its capacity.
+A further constraint prevents the levels of both the production and the routing stores from exceeding their maximum capacities. 
+
+
+## PF-based discharge simulations
+
+The example below provides ensemble discharge simulations resulting from the daily PF-based assimilation of discharge observations.
+
+The PF scheme relies on the Sequential Importance Resampling (SIR) technique [@gordon_novel_1993]. According to the SIR approach, the importance weights associated to the particles are updated according to the likelihood of particle states with respect to the observed one. A resampling procedure allows to discard particles having a low probability and to replicate those having a high importance weight.
+If the ensemble is too squeezed to properly evaluate the importance weights, all particles are assigned equal weights.
+
+```{r, warning=FALSE}
+ResPF <- RunModel_DA(InputsModel = InputsModel,
+                     InputsPert = InputsPert,
+                     Qobs = BasinObs$Qmm,
+                     IndRun = IndRun,
+                     FUN_MOD = RunModel_GR5J, Param = Param, 
+                     DaMethod = "PF", NbMbr = NbMbr,
+                     StatePert = "Rout")
+```
+
+Unlike the previous example, here only the uncertainty in the level of the routing store (see `StatePert`) is taken into account. Therefore, the routing store level is the only state variable to be perturbed after the updating procedure.
+
+After the state perturbation, a mass-constraint prevents the levels of both the production and the routing stores from exceeding their maximum capacities. 
+
+
+# Comparative performance assessment
+
+Here the performances of the EnKF- and PF-based modelling systems are assessed against the open-loop run, which provides discharge simulations without the assimilation of discharge observations. 
+
+```{r, warning=FALSE}
+RunOptions <- CreateRunOptions(FUN_MOD = RunModel_GR5J,
+                               InputsModel = InputsModel, 
+                               IndPeriod_Run = IndRun)
+InputsCritMulti <- CreateInputsCrit(FUN_CRIT = list(ErrorCrit_KGE, ErrorCrit_NSE), 
+                                    InputsModel = InputsModel, RunOptions = RunOptions,
+                                    Obs = list(Qobs, Qobs),
+                                    VarObs = list("Q", "Q"), 
+                                    transfo = list("", "sqrt"),
+                                    Weights = NULL)
+```
+
+```{r, warning=FALSE, eval=TRUE, message=FALSE}
+# open-loop run (without DA)
+OutputsModel_OL <- RunModel_GR5J(InputsModel = InputsModel, RunOptions = RunOptions, 
+                                 Param = Param)
+CritOL <- ErrorCrit(InputsCrit = InputsCritMulti, OutputsModel = OutputsModel_OL)
+```
+
+```{r, warning=FALSE, eval=TRUE, message=FALSE}
+# EnKF run
+OutputsModel_EnKF <- OutputsModel_OL
+OutputsModel_EnKF$Qsim <- rowMeans(ResEnKF$QsimEns)
+CritEnKF <- ErrorCrit(InputsCrit = InputsCritMulti, OutputsModel = OutputsModel_EnKF)
+```
+
+```{r, warning=FALSE, eval=TRUE, message=FALSE}
+# PF run
+OutputsModel_PF <- OutputsModel_OL
+OutputsModel_PF$Qsim <- rowMeans(ResPF$QsimEns)
+CritPF <- ErrorCrit(InputsCrit = InputsCritMulti, OutputsModel = OutputsModel_PF)
+```
+
+When comparing the performance of these 3 modelling configurations, it is noteworthy that the assimilation of discharge observations generally succeeds in enhancing the accuracy of discharge simulations, though they rely on different DA settings (i.e. different DA techniques, system uncertainties and updated states). 
+
+```{r, eval=TRUE, echo=FALSE}
+CritVal <- rbind(
+  sapply(CritOL  , "[[", "CritValue"),
+  sapply(CritEnKF, "[[", "CritValue"),
+  sapply(CritPF  , "[[", "CritValue")
+)
+CritVal <- round(CritVal, dig = 3)
+colnames(CritVal) <- sapply(CritOL, "[[", "CritName")
+CritVal <- cbind(data.frame(Method = c( "OL", "EnKF", "PL")),
+                 CritVal)
+CritVal
+```
+
+
+```{r, fig.width=7, fig.height=5, warning=FALSE, echo=FALSE}
+ylimMin <- min(rowMeans(ResEnKF$QsimEns), rowMeans(ResPF$QsimEns), OutputsModel_OL$Qsim, Qobs)
+ylimMax <- max(rowMeans(ResEnKF$QsimEns), rowMeans(ResPF$QsimEns), OutputsModel_OL$Qsim, Qobs)
+
+oldpar <- par(mar = c(5, 4, 2, 2))
+matplot(x = BasinObs$DatesR[IndRun],
+        y = cbind(OutputsModel_OL$Qsim,
+                  rowMeans(ResEnKF$QsimEns),
+                  rowMeans(ResPF$QsimEns),
+                  Qobs),
+        type = "l", col = c("red", "green", "blue", "black"),
+        lty = c(1, 1, 1, 3), lwd = c(1.5, 1.5, 1.5, 1.5),
+        xlab = "Time", ylab = "Discharge [mm/d]",
+        xaxt = "n"
+)
+axis.POSIXct(side = 1, x = BasinObs$DatesR[IndRun])
+legend("topleft", legend = c("OL", "EnKF", "PF", "Obs"),
+       col = c("red", "green", "blue", "black"),
+       lty = c(1, 1, 1, 3), lwd = rep(1.5, 4))
+par(oldpar)
+```
+
+
+
+# References

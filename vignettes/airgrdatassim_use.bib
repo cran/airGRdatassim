@@ -1,0 +1,68 @@
+
+@article{clark_hydrological_2008,
+	title = {Hydrological data assimilation with the ensemble {Kalman} filter: {Use} of streamflow observations to update states in a distributed hydrological model},
+	volume = {31},
+	issn = {0309-1708},
+	url = {http://www.sciencedirect.com/science/article/pii/S0309170808001012},
+	doi = {10.1016/j.advwatres.2008.06.005},
+	abstract = {This paper describes an application of the ensemble Kalman filter (EnKF) in which streamflow observations are used to update states in a distributed hydrological model. We demonstrate that the standard implementation of the EnKF is inappropriate because of non-linear relationships between model states and observations. Transforming streamflow into log space before computing error covariances improves filter performance. We also demonstrate that model simulations improve when we use a variant of the EnKF that does not require perturbed observations. Our attempt to propagate information to neighbouring basins was unsuccessful, largely due to inadequacies in modelling the spatial variability of hydrological processes. New methods are needed to produce ensemble simulations that both reflect total model error and adequately simulate the spatial variability of hydrological states and fluxes.},
+	number = {10},
+	journal = {Advances in Water Resources},
+	author = {Clark, M. P. and Rupp, D. E. and Woods, R. A. and Zheng, X. and Ibbitt, R. P. and Slater, A. G. and Schmidt, J. and Uddstrom, M. J.},
+	year = {2008},
+	keywords = {airGRdatassim, Assimilation, Ensemble, Streamflow},
+	pages = {1309--1324}
+}
+
+@article{weerts_particle_2006,
+	title = {Particle filtering and ensemble {Kalman} filtering for state updating with hydrological conceptual rainfall-runoff models},
+	volume = {42},
+	url = {https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2005WR004093},
+	doi = {10.1029/2005WR004093},
+	abstract = {Sequential importance resampling (SIR) filter, residual resampling filter (RR), and an ensemble Kalman (EnKF) filter that can handle dynamic nonlinear/non-Gaussian models are compared to correct erroneous model inputs and to obtain a rainfall-runoff update with a conceptual rainfall-runoff model HBV-96 for flood forecasting purposes. EnKF performs best with a low number of ensemble members. The RR filter performs best at intermediate and high number of particles, although differences are small. With all filters the rainfall error could be estimated during a synthetic experiment when the soil is not too dry and the measurement error on the discharge is not dominant. The temperature error could only be estimated when the temperature is close to 0°C. When applying these methods to a real case, good results are obtained. For low flows, EnKF outperforms both particle filters, because it is less sensitive to misspecification of the model and uncertainties. These methods are feasible and easy to implement in real flood forecasting systems. Further research on the assumptions on model uncertainties and measurement uncertainties is recommended.},
+	number = {9},
+	journal = {Water Resources Research},
+	author = {Weerts, A. H. and El Serafy, G. Y. H.},
+	year = {2006},
+	keywords = {airGRdatassim, data assimilation, Kalman filter, sequential Monte Carlo}
+}
+
+@article{salamon_assessing_2009,
+	title = {Assessing parameter, precipitation, and predictive uncertainty in a distributed hydrological model using sequential data assimilation with the particle filter},
+	volume = {376},
+	issn = {0022-1694},
+	url = {http://www.sciencedirect.com/science/article/pii/S0022169409004533},
+	doi = {https://doi.org/10.1016/j.jhydrol.2009.07.051},
+	abstract = {Summary Sequential data assimilation techniques offer the possibility to handle different sources of uncertainty explicitly in hydrological models and hence improve their predictive capabilities. Amongst the different techniques, sequential Monte Carlo or particle filter methods offer the capability to handle non-linear/non-Gaussian state-space models while preserving the spatial variability of updated state variables, both desirable features when assimilating data in distributed hydrological models. In this work we apply the residual resampling particle filter to assess parameter, precipitation, and predictive uncertainty in the distributed rainfall–runoff model LISFLOOD. First, we compare estimated posterior parameter distributions with results of the Shuffled Complex Evolution Metropolis global optimization algorithm obtained using identical input data for the Meuse catchment and considering parameter uncertainty only. Both approaches result in well identifiable posterior parameter distributions and provide a reasonable fit to the observed hydrograph. The resulting posterior distributions, however, vary considerably in shape, location, and scale, most likely caused by the different assumptions made in the output error model. An evaluation of the predictive distributions illustrates that predictive uncertainty is significantly underestimated for both approaches when accounting for parameter uncertainty only. A second case study shows that considering additionally precipitation uncertainty not only increases the spread of the posterior parameter distributions but may also result in a completely different location and/or shape of the posterior distributions. Evaluation of the posterior precipitation multiplier distribution reveals that no overall systematic bias exists in the precipitation grids and that particle filtering is a suitable tool to quantify and reduce precipitation uncertainty. Furthermore, considering precipitation and parameter uncertainty leads to an improvement in model predictive capabilities, especially for the high flow periods. However, the remaining underestimation of predictive uncertainty also indicates that model structural uncertainty is equally important, in spite of using a physically-based distributed hydrological model that should theoretically provide an improved description of the hydrological system dynamics.},
+	number = {3},
+	journal = {Journal of Hydrology},
+	author = {Salamon, P. and Feyen, L.},
+	year = {2009},
+	keywords = {airGRdatassim, Distributed hydrological model, Particle filter, Sequential data assimilation, Uncertainty},
+	pages = {428--442}
+}
+
+@article{thirel_past_2010,
+	title = {A past discharges assimilation system for ensemble streamflow forecasts over {France} – {Part} 1: {Description} and validation of the assimilation system},
+	volume = {14},
+	url = {https://hess.copernicus.org/articles/14/1623/2010/},
+	doi = {10.5194/hess-14-1623-2010},
+	number = {8},
+	journal = {Hydrology and Earth System Sciences},
+	author = {Thirel, G. and Martin, E. and Mahfouf, J.-F. and Massart, S. and Ricci, S. and Habets, F.},
+	year = {2010},
+	keywords = {airGRdatassim},
+	pages = {1623--1637}
+}
+
+@article{gordon_novel_1993,
+	title = {Novel approach to nonlinear/non-{Gaussian} {Bayesian} state estimation},
+	volume = {140},
+	doi = {10.1049/ip-f-2.1993.0015},
+	number = {2},
+	journal = {IEE Proceedings F - Radar and Signal Processing},
+	author = {Gordon, N. J. and Salmond, D. J. and Smith, A. F. M.},
+	year = {1993},
+	keywords = {airGRdatassim},
+	pages = {107--113}
+}

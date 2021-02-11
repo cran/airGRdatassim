@@ -1,0 +1,39 @@
+year    <- sub("-.*", "", meta$Date)
+version <- meta$Version
+note    <- sprintf("R package version %s", version)
+
+
+citHeader("To cite airGR in publications use these two references:")
+
+bibentry(bibtype     = "Article",
+         title       = "Sequential data assimilation for streamflow forecasting: assessing the sensitivity to uncertinties and to updated variables of a conceptual hydrological model",
+         author      = personList(as.person("G. Piazzi"), as.person("G. Thirel"), as.person("C. Perrin"), as.person("O. Delaigue")),
+         journal     = "Water Resources Research",
+         year        = "accepted",
+         doi         = "10.1029/2020WR028390",
+         textVersion =
+           paste("Piazzi, G., Thirel, G., Perrin, C. and Delaigue, O.",
+                 "(accepted).",
+                 "Sequential data assimilation for streamflow forecasting: assessing the sensitivity to uncertinties and to updated variables of a conceptual hydrological model.",
+                 "Water Resources Research,",
+                 "doi: 10.1029/2020WR028390.",
+                 sep = " ")
+)
+
+bibentry(bibtype     = "Manual",
+         title       = "{airGRdatassim}: Suite of Tools to Perform Ensemble-Based Data Assimilation in {GR} Hydrological Models",
+         author      = personList(as.person("G. Piazzi"), as.person("O. Delaigue")),
+         journal     = "R News",
+         year        = year,
+         note        = note,
+         doi         = "10.15454/WEYYVZ",
+         url         = "https://gitlab.irstea.fr/HYCAR-Hydro/airgrdatassim",
+         textVersion =
+           paste0("Piazzi, G. and Delaigue, O. (",
+                  year,
+                  "). airGRdatassim: Suite of Tools to Perform Ensemble-Based Data Assimilation in GR Hydrological Models. ",
+                  note, ", ",
+                  "doi: 10.15454/WEYYVZ", ", ",
+                  "URL  : https://gitlab.irstea.fr/HYCAR-Hydro/airgrdatassim."
+                  )
+)
