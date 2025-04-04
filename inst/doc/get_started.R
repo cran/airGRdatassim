@@ -1,4 +1,4 @@
-## ---- warning=FALSE, include=FALSE--------------------------------------------
+## ----warning=FALSE, include=FALSE---------------------------------------------
 #knitr::write_bib("airGR", file = "airgr_ref.bib")
 airGR_bib <- toBibtex(citation("airGR"))
 airGR_bib <- gsub("@Article\\{", "@Article{airGR2017", airGR_bib)
@@ -11,13 +11,13 @@ writeLines(text = airGR_bib, con = "airgr_ref.bib")
 writeLines(text = airGRdatassim_bib, con = "airgrdatassim_ref.bib")
 options(encoding = "native.enc")
 
-## ---- warning=FALSE-----------------------------------------------------------
+## ----warning=FALSE------------------------------------------------------------
 library(airGRdatassim)
 
 data(L0123001, package = "airGR") 
 head(BasinObs)
 
-## ---- warning=FALSE-----------------------------------------------------------
+## ----warning=FALSE------------------------------------------------------------
 # ensemble size 
 NbMbr <- 100L
 
@@ -31,7 +31,7 @@ DaMethod <- "EnKF"
 StateEnKF <- c("Prod", "Rout")
 StatePert <- c("Prod", "Rout") 
 
-## ---- warning=FALSE-----------------------------------------------------------
+## ----warning=FALSE------------------------------------------------------------
 ## simulation period
 IndRun <- seq(which(format(BasinObs$DatesR, format = "%Y-%m-%d") == "2006-09-01"), 
               which(format(BasinObs$DatesR, format = "%Y-%m-%d") == "2006-10-31"))
@@ -46,11 +46,11 @@ InputsPert <- CreateInputsPert(FUN_MOD = RunModel_GR5J,
                                Precip = BasinObs$P, PotEvap = BasinObs$E, 
                                NbMbr = NbMbr)
 
-## ---- warning=FALSE-----------------------------------------------------------
+## ----warning=FALSE------------------------------------------------------------
 ## discharge observations to be assimilated
 Qobs <- BasinObs$Qmm[IndRun]
 
-## ---- warning=FALSE-----------------------------------------------------------
+## ----warning=FALSE------------------------------------------------------------
 Param <- c(X1 = 194.243, X2 = -0.088, X3 = 117.740, X4 = 1.680, X5 = 0.000)
 ResEnKF <- RunModel_DA(InputsModel = InputsModel,
                        InputsPert = InputsPert,
@@ -60,7 +60,7 @@ ResEnKF <- RunModel_DA(InputsModel = InputsModel,
                        DaMethod = "EnKF", NbMbr = NbMbr,
                        StateEnKF = StateEnKF, StatePert = StatePert)
 
-## ---- warning=FALSE-----------------------------------------------------------
+## ----warning=FALSE------------------------------------------------------------
 ResPF <- RunModel_DA(InputsModel = InputsModel,
                      InputsPert = InputsPert,
                      Qobs = BasinObs$Qmm,
@@ -69,7 +69,7 @@ ResPF <- RunModel_DA(InputsModel = InputsModel,
                      DaMethod = "PF", NbMbr = NbMbr,
                      StatePert = "Rout")
 
-## ---- warning=FALSE-----------------------------------------------------------
+## ----warning=FALSE------------------------------------------------------------
 RunOptions <- CreateRunOptions(FUN_MOD = RunModel_GR5J,
                                InputsModel = InputsModel, 
                                IndPeriod_Run = IndRun)
@@ -80,25 +80,25 @@ InputsCritMulti <- CreateInputsCrit(FUN_CRIT = list(ErrorCrit_KGE, ErrorCrit_NSE
                                     transfo = list("", "sqrt"),
                                     Weights = NULL)
 
-## ---- warning=FALSE, eval=TRUE, message=FALSE---------------------------------
+## ----warning=FALSE, eval=TRUE, message=FALSE----------------------------------
 # open-loop run (without DA)
 OutputsModel_OL <- RunModel_GR5J(InputsModel = InputsModel, RunOptions = RunOptions, 
                                  Param = Param)
 CritOL <- ErrorCrit(InputsCrit = InputsCritMulti, OutputsModel = OutputsModel_OL)
 
-## ---- warning=FALSE, eval=TRUE, message=FALSE---------------------------------
+## ----warning=FALSE, eval=TRUE, message=FALSE----------------------------------
 # EnKF run
 OutputsModel_EnKF <- OutputsModel_OL
 OutputsModel_EnKF$Qsim <- rowMeans(ResEnKF$QsimEns)
 CritEnKF <- ErrorCrit(InputsCrit = InputsCritMulti, OutputsModel = OutputsModel_EnKF)
 
-## ---- warning=FALSE, eval=TRUE, message=FALSE---------------------------------
+## ----warning=FALSE, eval=TRUE, message=FALSE----------------------------------
 # PF run
 OutputsModel_PF <- OutputsModel_OL
 OutputsModel_PF$Qsim <- rowMeans(ResPF$QsimEns)
 CritPF <- ErrorCrit(InputsCrit = InputsCritMulti, OutputsModel = OutputsModel_PF)
 
-## ---- eval=TRUE, echo=FALSE---------------------------------------------------
+## ----eval=TRUE, echo=FALSE----------------------------------------------------
 CritVal <- rbind(
   sapply(CritOL  , "[[", "CritValue"),
   sapply(CritEnKF, "[[", "CritValue"),
@@ -106,11 +106,11 @@ CritVal <- rbind(
 )
 CritVal <- round(CritVal, dig = 3)
 colnames(CritVal) <- sapply(CritOL, "[[", "CritName")
-CritVal <- cbind(data.frame(Method = c( "OL", "EnKF", "PL")),
+CritVal <- cbind(data.frame(Method = c( "OL", "EnKF", "PF")),
                  CritVal)
 CritVal
 
-## ---- fig.width=7, fig.height=5, warning=FALSE, echo=FALSE--------------------
+## ----fig.width=7, fig.height=5, warning=FALSE, echo=FALSE---------------------
 ylimMin <- min(rowMeans(ResEnKF$QsimEns), rowMeans(ResPF$QsimEns), OutputsModel_OL$Qsim, Qobs)
 ylimMax <- max(rowMeans(ResEnKF$QsimEns), rowMeans(ResPF$QsimEns), OutputsModel_OL$Qsim, Qobs)
 

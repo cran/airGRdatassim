@@ -78,28 +78,15 @@ RunModel_DA(InputsModel, InputsPert = NULL, Qobs = NULL,
 
 
 \value{
-[list] runModel_DA function provides a list containing the outputs organised as follows:
-  \tabular{ll}{
-    \emph{$DatesR     } \tab [POSIXlt] series of dates (length of IndRun)
-            \cr
-            \cr
-    \emph{$QsimEns    } \tab [numeric] matrix (dim(NbTime, NbMbr)) of ensemble discharge simulations
-            \cr
-            \cr
-    \emph{$EnsStateBkg} \tab [numeric] array (dim(NbTime, NbMbr, Nstate)) of ensemble values of background model states (before the filter update)
-            \cr
-            \cr
-    \emph{$EnsStateA  } \tab [numeric] array (dim(NbTime, NbMbr, Nstate)) of ensemble values of analysis model states (after the filter update)
-            \cr
-            \cr
-    \emph{$NbTime     } \tab [integer] atomic vector of length of IndRun
-            \cr
-            \cr
-    \emph{$NbMbr      } \tab [integer] atomic vector of number of ensemble members
-            \cr
-            \cr
-    \emph{$NbState    } \tab [integer] atomic vector of number of of model states
-         }
+[list] \code{'OutputsModel'} containing the outputs organised as follows:
+
+  \item{DatesR     }{[POSIXlt] series of dates (length of IndRun)}
+  \item{QsimEns    }{[numeric] matrix (dim(NbTime, NbMbr)) of ensemble discharge simulations}
+  \item{EnsStateBkg}{[numeric] array (dim(NbTime, NbMbr, Nstate)) of ensemble values of background model states (before the filter update)}
+  \item{EnsStateA  }{[numeric] array (dim(NbTime, NbMbr, Nstate)) of ensemble values of analysis model states (after the filter update)}
+  \item{NbTime     }{[integer] atomic vector of length of IndRun}
+  \item{NbMbr      }{[integer] atomic vector of number of ensemble members}
+  \item{NbState    }{[integer] atomic vector of number of of model states}
 
 On the graphical outputs: \cr
   - solid line: medians of the input values \cr
@@ -108,7 +95,7 @@ On the graphical outputs: \cr
 
 
 \description{
-Function which performs discharge ensemble simulations with the assimilation of observed discharges through the Ensemble Kalman filter (EnKF) or the Particle filter (PF) schemes. More information about the efficiency of these data assimilation schemes with GR4J can be found in Piazzi et al. (accepted).
+Function which performs discharge ensemble simulations with the assimilation of observed discharges through the Ensemble Kalman filter (EnKF) or the Particle filter (PF) schemes. More information about the efficiency of these data assimilation schemes with GR5J can be found in Piazzi et al. (2021).
 }
 
 
@@ -181,7 +168,7 @@ Gaia Piazzi, Olivier Delaigue
 \references{
 - Clark, M. P., Rupp, D. E., Woods, R. A., Zheng, X., Ibbitt, R. P., Slater, A. G. et al. (2008). Hydrological data assimilation with the ensemble Kalman filter: Use of streamflow observations to update states in a distributed hydrological model. Advances in Water Resources, 31(10), 1309-1324, \doi{10.1016/j.advwatres.2008.06.005}
 \cr\cr
-- Piazzi, G., Thirel, G., Perrin, C. and Delaigue, O. (accepted). Sequential data assimilation for streamflow forecasting: assessing the sensitivity to uncertainties and updated variables of a conceptual hydrological model. Water Resources Research, \doi{10.1029/2020WR028390}.
+- Piazzi, G., Thirel, G., Perrin, C. and Delaigue, O. (2021). Sequential data assimilation for streamflow forecasting: assessing the sensitivity to uncertainties and updated variables of a conceptual hydrological model at basin scale. Water Resources Research, 57, \doi{10.1029/2020WR028390}.
 \cr\cr
 - Salamon, P. and Feyen, L. (2009). Assessing parameter, precipitation, and predictive uncertainty in a distributed hydrological model using sequential data assimilation with the particle filter. Journal of Hydrology, 376(3-4), 428-442, \doi{10.1016/j.jhydrol.2009.07.051}
 }

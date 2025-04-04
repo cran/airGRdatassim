@@ -1,8 +1,8 @@
 Package: airGRdatassim
 Type: Package
 Title: Ensemble-Based Data Assimilation with GR Hydrological Models
-Version: 0.1.3
-Date: 2021-02-08
+Version: 0.1.4
+Date: 2025-04-04
 Authors@R: c(
   person("Gaia", "Piazzi", role = c("aut"), comment = c(ORCID = "0000-0002-4167-0794")),
   person("Olivier", "Delaigue", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7668-8468"), email = "airGR@inrae.fr"),
@@ -11,18 +11,18 @@ Authors@R: c(
   )
 Depends: airGR (>= 1.6.9.27)
 Imports: graphics, grDevices, stats, utils
-Suggests: knitr, rmarkdown
+Suggests: knitr, markdown, rmarkdown
 Description: Add-on to the 'airGR' package which provides the tools to assimilate observed discharges in daily GR hydrological models. The package consists in two functions allowing to perform the assimilation of observed discharges via the Ensemble Kalman filter or the Particle filter as described in Piazzi et al. (2021) <doi:10.1029/2020WR028390>.
 License: GPL-2
 BugReports: https://gitlab.irstea.fr/HYCAR-Hydro/airgrdatassim/-/issues
 NeedsCompilation: no
 Encoding: UTF-8
 VignetteBuilder: knitr
-Packaged: 2021-02-08 13:20:56 UTC; irstea
+Packaged: 2025-04-04 07:40:15 UTC; odelaigue
 Author: Gaia Piazzi [aut] (<https://orcid.org/0000-0002-4167-0794>),
   Olivier Delaigue [aut, cre] (<https://orcid.org/0000-0002-7668-8468>),
   Guillaume Thirel [ctb] (<https://orcid.org/0000-0002-1444-1830>),
   Maxime Logez [ctb] (<https://orcid.org/0000-0001-9843-0495>)
 Maintainer: Olivier Delaigue <airGR@inrae.fr>
 Repository: CRAN
-Date/Publication: 2021-02-11 15:30:02 UTC
+Date/Publication: 2025-04-04 08:00:01 UTC

@@ -272,7 +272,7 @@ CritVal <- rbind(
 )
 CritVal <- round(CritVal, dig = 3)
 colnames(CritVal) <- sapply(CritOL, "[[", "CritName")
-CritVal <- cbind(data.frame(Method = c( "OL", "EnKF", "PL")),
+CritVal <- cbind(data.frame(Method = c( "OL", "EnKF", "PF")),
                  CritVal)
 CritVal
 ```
